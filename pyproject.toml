@@ -1,0 +1,85 @@
+[tool.poetry]
+name = "cafeteria"
+version = "1.0.0"
+description = "Cafeteria API."
+authors = ["Vlad Ivanov <posta22@inbox.ru>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = { extras = ["standard"], version = "^0.26.0" }
+fastapi = "^0.109.0"
+orjson = "^3.9.12"
+asyncpg = "^0.29.0"
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.25" }
+pydantic-settings = "^2.1.0"
+
+[tool.poetry.group.formatters.dependencies]
+black = "^23.12.1"
+ruff = "^0.1.14"
+
+[tool.poetry.group.tests.dependencies]
+coverage = "^7.4.0"
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.3"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+extend-select = [
+    "F",
+    "I",
+    "PL",
+    "E",
+    "W",
+    "C4",
+    "B",
+    "T10",
+    "SIM",
+    "TID",
+    "T20",
+    "PGH",
+    "S",
+    "RET",
+    "PIE",
+    "UP",
+    "ASYNC",
+    "ISC",
+    "PERF",
+    "TRY",
+    "C90",
+]
+line-length = 120
+output-format = "grouped"
+
+[tool.ruff.pylint]
+max-args = 15
+
+[tool.ruff.mccabe]
+max-complexity = 15
+
+[tool.ruff.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "double"
+
+[tool.coverage.run]
+relative_files = true
+concurrency = ["greenlet", "thread"]
+
+[tool.coverage.report]
+sort = "cover"
+skip_covered = true
+
+[tool.pytest.ini_options]
+pythonpath = "sources"
+testpaths = "tests"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
