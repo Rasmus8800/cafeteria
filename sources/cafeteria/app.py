@@ -4,7 +4,6 @@ import http
 
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
-from loguru import logger
 
 from cafeteria.database import Database
 from cafeteria.external import v1
@@ -22,8 +21,6 @@ __all__ = ["app"]
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI) -> collections.abc.AsyncIterator[None]:
     """Жизненный цикл приложения."""
-
-    logger.info(settings.database)
 
     database = Database(settings=settings.database)
 
