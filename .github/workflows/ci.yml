@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.11 ]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.7.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Install dependencies
+      run: poetry install --with formatters
+
+    - name: Check code formatting with Black
+      id: black
+      run: |
+        poetry run black --check . || true
+        if [ $? -ne 0 ]; then
+          echo "formatting_problems=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Auto-fix Black formatting
+      if: steps.black.outputs.formatting_problems == 'true' && github.event_name == 'pull_request'
+      run: |
+        poetry run black .
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "style: auto-format with Black" || echo "No changes to commit"
+        git push || echo "No changes to push"
+
+    - name: Check code with Ruff
+      id: ruff
+      run: |
+        poetry run ruff check . --output-format=concise || true
+        if [ $? -ne 0 ]; then
+          echo "linting_problems=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Auto-fix Ruff issues
+      if: steps.ruff.outputs.linting_problems == 'true' && github.event_name == 'pull_request'
+      run: |
+        poetry run ruff check --fix .
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "style: auto-fix with Ruff" || echo "No changes to commit"
+        git push || echo "No changes to push"
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.11 ]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.7.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Install dependencies
+      run: poetry install --with tests
+
+    - name: Run tests with coverage
+      run: poetry run coverage run -m pytest -v
+
+    - name: Generate coverage report
+      run: poetry run coverage report -m
+
+    - name: Generate coverage XML report
+      run: poetry run coverage xml
+
+    - name: Generate coverage HTML report
+      run: poetry run coverage html
+
+    - name: Upload coverage HTML as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-${{ matrix.python-version }}
+        path: htmlcov/
+        retention-days: 7
+
+  security:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.11 ]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.7.1
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Run security check with Bandit
+      run: |
+        pip install bandit
+        bandit -r sources/ -f html -o bandit-report.html || true
