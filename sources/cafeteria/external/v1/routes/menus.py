@@ -53,7 +53,7 @@ async def get_menu(
         uuid.UUID,
         Path(description="Menu identifier"),
     ],
-    cafeteria_service: typing.Annotated[
+                            cafeteria_service: typing.Annotated[
         CafeteriaService,
         Depends(dependency=get_cafeteria_service),
     ],
@@ -65,7 +65,7 @@ async def get_menu(
     :returns: Меню.
     """
     menu = await cafeteria_service.get_menu(
-        menu_id=menu_id,
+                                                            menu_id=menu_id,
     )
 
     return MenuResponse(**menu)
@@ -76,14 +76,14 @@ async def get_menu(
     status_code=http.HTTPStatus.CREATED,
     summary="Create menu",
     description="Create menu.",
-    response_model=MenuResponse,
+        response_model=MenuResponse,
 )
 async def create_menu(
     menu_to_create: typing.Annotated[
         CreateMenuRequest,
         Body(description="Menu to create."),
     ],
-    cafeteria_service: typing.Annotated[
+         cafeteria_service: typing.Annotated[
         CafeteriaService,
         Depends(dependency=get_cafeteria_service),
     ],
@@ -95,7 +95,7 @@ async def create_menu(
     :returns: Созданное меню.
     """
     menu = await cafeteria_service.create_menu(
-        title=menu_to_create.title,
+        title=  menu_to_create.title,
         description=menu_to_create.description,
     )
 
@@ -105,7 +105,7 @@ async def create_menu(
 @router.patch(
     path="/menus/{menu_id}",
     status_code=http.HTTPStatus.OK,
-    summary="Correct menu",
+    summary=    "Correct menu",
     description="Correct menu.",
     response_model=MenuResponse,
 )
