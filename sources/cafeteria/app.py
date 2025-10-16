@@ -24,7 +24,7 @@ async def lifespan(_: FastAPI) -> collections.abc.AsyncIterator[None]:
 
     database = Database(settings=settings.database)
 
-    from cafeteria.internal import (  # noqa: F401 Быстрый фикс для доступности моделей (они не создавались).
+    from cafeteria.internal import (  # noqa: F401 Прямой импорт для доступности моделей.
         models,
     )
 

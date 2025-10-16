@@ -19,6 +19,12 @@ class Entity(typing.Generic[K]):
     id: K
     """Идентификатор сущности."""
 
+    def __eq__(self, other: typing.Any) -> bool:
+        """Сравнение по идентификатору."""
+        if not isinstance(other, type(self)):
+            return False
+        return self.id == other.id
+
 
 T = typing.TypeVar("T", bound=Entity)
 """Идентификатор типа."""
@@ -74,7 +80,7 @@ class CRUDRepository(abc.ABC, typing.Generic[K, T]):
         async with self._wrap_session(session) as session:
             result = await session.scalars(statement)
 
-            return result.one_or_none()
+            return result.unique().one_or_none()
 
     async def find_all(
         self,
@@ -91,7 +97,7 @@ class CRUDRepository(abc.ABC, typing.Generic[K, T]):
         async with self._wrap_session(session) as session:
             result = await session.scalars(statement)
 
-            return result.all()
+            return result.unique().all()
 
     async def save(
         self,

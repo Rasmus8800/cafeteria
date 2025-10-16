@@ -447,7 +447,7 @@ class CafeteriaService:
         if not menu:
             raise MenuNotFoundError(menu_id=menu_id)
 
-        submenus = await self.submenu_repository.find_all()
+        submenus = menu.submenus
 
         return [
             {

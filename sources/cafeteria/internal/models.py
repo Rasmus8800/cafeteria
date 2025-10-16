@@ -84,7 +84,8 @@ class Menu(DatabaseEntity, Entity):
         "Submenu",
         back_populates="menu",
         cascade="all, delete",
-        lazy="selectin",
+        lazy="joined",
+        uselist=True,
     )
     """Список подменю."""
 
@@ -124,7 +125,8 @@ class Submenu(DatabaseEntity, Entity):
         "Dish",
         back_populates="submenu",
         cascade="all, delete",
-        lazy="selectin",
+        lazy="joined",
+        uselist=True,
     )
     """Список блюд."""
     menu: Mapped[Menu] = relationship(

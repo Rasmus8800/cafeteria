@@ -33,7 +33,7 @@ async def get_database(
     app: typing.Annotated[
         FastAPI,
         Depends(dependency=get_app),
-    ]
+    ],
 ) -> Database:
     """Получает базу данных.
 
@@ -47,7 +47,7 @@ async def get_dish_repository(
     database: typing.Annotated[
         Database,
         Depends(dependency=get_database),
-    ]
+    ],
 ) -> DishRepository:
     """Получает репозиторий блюд.
 
@@ -61,7 +61,7 @@ async def get_submenu_repository(
     database: typing.Annotated[
         Database,
         Depends(dependency=get_database),
-    ]
+    ],
 ) -> SubmenuRepository:
     """Получает репозиторий подменю.
 
@@ -75,7 +75,7 @@ async def get_menus_repository(
     database: typing.Annotated[
         Database,
         Depends(dependency=get_database),
-    ]
+    ],
 ) -> MenuRepository:
     """Получает репозиторий меню.
 
